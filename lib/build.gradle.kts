@@ -7,9 +7,10 @@ repositories {
 }
 
 dependencies {
-    compile("org.slf4j:slf4j-api:${Deps.slf4j}")
-    compile("com.google.guava:guava:${Deps.guava}")
-    testCompile("org.junit.jupiter:junit-jupiter:${Deps.junit}")
+    api(platform(project(":platform")))
+    compile("org.slf4j:slf4j-api")
+    compile("com.google.guava:guava")
+    testCompile("org.junit.jupiter:junit-jupiter")
 }
 
 tasks.test {

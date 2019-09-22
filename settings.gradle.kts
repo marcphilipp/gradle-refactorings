@@ -1,3 +1,3 @@
 rootProject.name = "gradle-refactorings"
 
-include("cli", "lib")
+include("cli", "lib", "platform")
