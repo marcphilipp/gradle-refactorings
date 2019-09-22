@@ -36,9 +36,10 @@ tasks.test {
 }
 
 tasks.register("jarChecksum") {
-    dependsOn(tasks.jar)
     val archiveFile = tasks.jar.flatMap { it.archiveFile }
+    inputs.file(archiveFile).withPathSensitivity(PathSensitivity.NONE)
     val checksumFile = archiveFile.map { File("${it.asFile.absolutePath}.sha512") }
+    outputs.file(checksumFile)
     doFirst {
         val hashCode = Files.asByteSource(archiveFile.get().asFile).hash(Hashing.sha512())
         checksumFile.get().writeText(hashCode.toString())
