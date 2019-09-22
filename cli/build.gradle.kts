@@ -1,5 +1,6 @@
 import com.google.common.hash.Hashing
 import com.google.common.io.Files
+import javax.inject.Inject
 
 buildscript {
     repositories {
@@ -35,13 +36,24 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.register("jarChecksum") {
-    val archiveFile = tasks.jar.flatMap { it.archiveFile }
-    inputs.file(archiveFile).withPathSensitivity(PathSensitivity.NONE)
-    val checksumFile = archiveFile.map { File("${it.asFile.absolutePath}.sha512") }
-    outputs.file(checksumFile)
-    doFirst {
-        val hashCode = Files.asByteSource(archiveFile.get().asFile).hash(Hashing.sha512())
-        checksumFile.get().writeText(hashCode.toString())
+tasks.register<Checksum>("jarChecksum") {
+    inputFile.set(tasks.jar.flatMap { it.archiveFile })
+}
+
+open class Checksum @Inject constructor(objects: ObjectFactory) : DefaultTask() {
+
+    @InputFile
+    @PathSensitive(PathSensitivity.NONE)
+    val inputFile = objects.fileProperty()
+
+    @OutputFile
+    val checksumFile = objects.fileProperty().convention {
+        File("${inputFile.get().asFile}.sha512")
+    }
+
+    @TaskAction
+    fun generateChecksum() {
+        val hashCode = Files.asByteSource(inputFile.get().asFile).hash(Hashing.sha512())
+        checksumFile.get().asFile.writeText(hashCode.toString())
     }
 }
