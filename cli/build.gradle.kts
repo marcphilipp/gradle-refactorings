@@ -1,3 +1,15 @@
+import com.google.common.hash.Hashing
+import com.google.common.io.Files
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.google.guava:guava:${Deps.guava}")
+    }
+}
+
 plugins {
     java
     application
@@ -21,4 +33,14 @@ application {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.register("jarChecksum") {
+    dependsOn(tasks.jar)
+    val archiveFile = tasks.jar.flatMap { it.archiveFile }
+    val checksumFile = archiveFile.map { File("${it.asFile.absolutePath}.sha512") }
+    doFirst {
+        val hashCode = Files.asByteSource(archiveFile.get().asFile).hash(Hashing.sha512())
+        checksumFile.get().writeText(hashCode.toString())
+    }
 }
