@@ -1,16 +1,3 @@
-import com.google.common.hash.Hashing
-import com.google.common.io.Files
-import javax.inject.Inject
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.google.guava:guava:${Deps.guava}")
-    }
-}
-
 plugins {
     java
     application
@@ -38,22 +25,4 @@ tasks.test {
 
 tasks.register<Checksum>("jarChecksum") {
     inputFile.set(tasks.jar.flatMap { it.archiveFile })
-}
-
-open class Checksum @Inject constructor(objects: ObjectFactory) : DefaultTask() {
-
-    @InputFile
-    @PathSensitive(PathSensitivity.NONE)
-    val inputFile = objects.fileProperty()
-
-    @OutputFile
-    val checksumFile = objects.fileProperty().convention {
-        File("${inputFile.get().asFile}.sha512")
-    }
-
-    @TaskAction
-    fun generateChecksum() {
-        val hashCode = Files.asByteSource(inputFile.get().asFile).hash(Hashing.sha512())
-        checksumFile.get().asFile.writeText(hashCode.toString())
-    }
 }
