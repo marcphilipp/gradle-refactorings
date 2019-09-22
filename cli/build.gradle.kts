@@ -9,8 +9,9 @@ repositories {
 
 dependencies {
     implementation(project(":lib"))
-    implementation("org.slf4j:slf4j-simple:1.7.28")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+    implementation("org.slf4j:slf4j-api:${Deps.slf4j}")
+    runtimeOnly("org.slf4j:slf4j-simple:${Deps.slf4j}")
+    testImplementation("org.junit.jupiter:junit-jupiter:${Deps.junit}")
 }
 
 application {
